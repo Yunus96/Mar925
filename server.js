@@ -52,19 +52,17 @@ app.get('/github', async (req, res) => {
 app.get('/github/:repoName', async (req, res) => {
     try {
         const { repoName } = req.params;
-        console.log(repoName)
+        
         const cacheKey = `github-repo:${process.env.GITHUB_USERNAME}:${repoName}`;
-        console.log(cacheKey)
+    
         // Check Redis Cache
         const cachedData = await redisClient.get(cacheKey);
-        console.log(cachedData)
-        if (cachedData) {
-            console.log(res.json(JSON.parse(cachedData)))
-            return res.json(JSON.parse(cachedData)); // Return Cached Data
-        } else {
+        console.log(typeof cachedData)
+
+        if (cachedData === "string") {
        // Fetch repo details from GitHub API
        const repoRes = await axios.get(`https://api.github.com/repos/${process.env.GITHUB_USERNAME}/${repoName}`);
-       console.log(repoRes)
+       //console.log(repoRes)
 
        const repoData = {
            name: repoRes.data.name,
@@ -81,9 +79,10 @@ app.get('/github/:repoName', async (req, res) => {
        await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(repoData));
 
        res.json(repoData);
+        } else {
+             //console.log(res.json(JSON.parse(cachedData)))
+             return res.json(JSON.parse(cachedData)); // Return Cached Data
         }
-
- 
     } catch (error) {
         console.error("GitHub API Error:", error.message);
         res.status(500).json({ message: "Error fetching repository details" });
