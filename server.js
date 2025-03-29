@@ -62,6 +62,7 @@ app.get('/github/:repoName', async (req, res) => {
 
         // Fetch repo details from GitHub API
         const repoRes = await axios.get(`https://api.github.com/repos/${process.env.GITHUB_USERNAME}/${repoName}`);
+        console.log(repoRes)
 
         const repoData = {
             name: repoRes.data.name,
