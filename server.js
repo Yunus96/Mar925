@@ -52,11 +52,14 @@ app.get('/github', async (req, res) => {
 app.get('/github/:repoName', async (req, res) => {
     try {
         const { repoName } = req.params;
+        console.log(repoName)
         const cacheKey = `github-repo:${process.env.GITHUB_USERNAME}:${repoName}`;
-
+        console.log(cacheKey)
         // Check Redis Cache
         const cachedData = await redisClient.get(cacheKey);
+        console.log(cachedData)
         if (cachedData) {
+            console.log(res.json(JSON.parse(cachedData)))
             return res.json(JSON.parse(cachedData)); // Return Cached Data
         }
 
