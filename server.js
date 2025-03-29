@@ -57,7 +57,6 @@ app.get('/github/:repoName', async (req, res) => {
     
         // Check Redis Cache
         const cachedData = await redisClient.get(cacheKey);
-        console.log(typeof cachedData)
 
         if (cachedData === "string") {
        // Fetch repo details from GitHub API
@@ -72,7 +71,8 @@ app.get('/github/:repoName', async (req, res) => {
            forks: repoRes.data.forks_count,
            language: repoRes.data.language,
            created_at: repoRes.data.created_at,
-           updated_at: repoRes.data.updated_at
+           updated_at: repoRes.data.updated_at,
+           cached: "false"
        };
 
        // Store Data in Redis (Expire in 10 Minutes)
