@@ -57,8 +57,8 @@ app.get('/github/:repoName', async (req, res) => {
     
         // Check Redis Cache
         const cachedData = await redisClient.get(cacheKey);
-
-        if (cachedData === "string") {
+        
+        if (cachedData === "null") {
        // Fetch repo details from GitHub API
        const repoRes = await axios.get(`https://api.github.com/repos/${process.env.GITHUB_USERNAME}/${repoName}`);
        //console.log(repoRes)
