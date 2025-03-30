@@ -16,10 +16,10 @@ app.get('/github', async (req, res) => {
 
         // Check Redis Cache
         const cachedData = await redisClient.get(cacheKey);
-        if (cachedData) {
+        console.log(cachedData)
+        if (cachedData !== null) {
             return res.json(JSON.parse(cachedData)); // Return Cached Data
-        }
-
+        } else {
         // Fetch Data from GitHub API
         const [followersRes, followingRes, reposRes] = await Promise.all([
             axios.get(`${GITHUB_API}/followers`),
@@ -41,7 +41,8 @@ app.get('/github', async (req, res) => {
         // Store Data in Redis (Expire in 10 Minutes)
         await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(githubData));
 
-        res.json(githubData);
+        res.set("X-Cache", "Miss").json(githubData);
+        }
     } catch (error) {
         console.error("GitHub API Error:", error.message);
         res.status(500).json({ message: "Error fetching GitHub data" });
@@ -58,29 +59,28 @@ app.get('/github/:repoName', async (req, res) => {
         // Check Redis Cache
         const cachedData = await redisClient.get(cacheKey);
         
-        if (cachedData === "null") {
-       // Fetch repo details from GitHub API
-       const repoRes = await axios.get(`https://api.github.com/repos/${process.env.GITHUB_USERNAME}/${repoName}`);
-       //console.log(repoRes)
+        if (cachedData == null) {
+            // Fetch repo details from GitHub API
+            const repoRes = await axios.get(`https://api.github.com/repos/${process.env.GITHUB_USERNAME}/${repoName}`);
+            //console.log(repoRes)
 
-       const repoData = {
-           name: repoRes.data.name,
-           description: repoRes.data.description,
-           url: repoRes.data.html_url,
-           stars: repoRes.data.stargazers_count,
-           forks: repoRes.data.forks_count,
-           language: repoRes.data.language,
-           created_at: repoRes.data.created_at,
-           updated_at: repoRes.data.updated_at,
-           cached: "false"
-       };
+            const repoData = {
+                name: repoRes.data.name,
+                description: repoRes.data.description,
+                url: repoRes.data.html_url,
+                stars: repoRes.data.stargazers_count,
+                forks: repoRes.data.forks_count,
+                language: repoRes.data.language,
+                created_at: repoRes.data.created_at,
+                updated_at: repoRes.data.updated_at,
+                cached: "false"
+            };
 
-       // Store Data in Redis (Expire in 10 Minutes)
-       await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(repoData));
+            // Store Data in Redis (Expire in 10 Minutes)
+            await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(repoData));
 
-       res.json(repoData);
+            res.json(repoData);
         } else {
-             //console.log(res.json(JSON.parse(cachedData)))
              return res.json(JSON.parse(cachedData)); // Return Cached Data
         }
     } catch (error) {
