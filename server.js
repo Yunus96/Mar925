@@ -17,7 +17,7 @@ app.get('/github', async (req, res) => {
         // Check Redis Cache
         const cachedData = await redisClient.get(cacheKey);
         console.log(cachedData)
-        if (cachedData !== null) {
+        if (cachedData != null) {
             return res.json(JSON.parse(cachedData)); // Return Cached Data
         } else {
         // Fetch Data from GitHub API
