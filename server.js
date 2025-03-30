@@ -17,31 +17,32 @@ app.get('/github', async (req, res) => {
         // Check Redis Cache
         const cachedData = await redisClient.get(cacheKey);
         console.log(cachedData)
-        if (cachedData != null) {
-            return res.json(JSON.parse(cachedData)); // Return Cached Data
+        
+        if (cachedData == null) {
+            // Fetch Data from GitHub API
+            const [followersRes, followingRes, reposRes] = await Promise.all([
+                axios.get(`${GITHUB_API}/followers`),
+                axios.get(`${GITHUB_API}/following`),
+                axios.get(`${GITHUB_API}/repos?per_page=100`)
+            ]);
+
+            const githubData = {
+                username: process.env.GITHUB_USERNAME,
+                followers: followersRes.data.length,
+                following: followingRes.data.length,
+                repositories: reposRes.data.map(repo => ({
+                    name: repo.name,
+                    url: repo.html_url,
+                    stars: repo.stargazers_count
+                }))
+            };
+
+            // Store Data in Redis (Expire in 10 Minutes)
+            await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(githubData));
+
+            res.set("X-Cache", "Miss").json(githubData);
         } else {
-        // Fetch Data from GitHub API
-        const [followersRes, followingRes, reposRes] = await Promise.all([
-            axios.get(`${GITHUB_API}/followers`),
-            axios.get(`${GITHUB_API}/following`),
-            axios.get(`${GITHUB_API}/repos?per_page=100`)
-        ]);
-
-        const githubData = {
-            username: process.env.GITHUB_USERNAME,
-            followers: followersRes.data.length,
-            following: followingRes.data.length,
-            repositories: reposRes.data.map(repo => ({
-                name: repo.name,
-                url: repo.html_url,
-                stars: repo.stargazers_count
-            }))
-        };
-
-        // Store Data in Redis (Expire in 10 Minutes)
-        await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(githubData));
-
-        res.set("X-Cache", "Miss").json(githubData);
+            return res.json(JSON.parse(cachedData)); // Return Cached Data
         }
     } catch (error) {
         console.error("GitHub API Error:", error.message);
