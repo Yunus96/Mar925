@@ -1,7 +1,8 @@
 require('dotenv').config();
-const express = require('express');
-const axios = require('axios');
-const redisClient = require('./redisClient');
+import express from 'express';
+import axios from 'axios';
+import redisClient from 'redisClient';
+import routes from './routes/github.routes.js'
 
 const app = express();
 app.use(express.json());
@@ -10,14 +11,16 @@ const PORT = process.env.PORT || 5000;
 const GITHUB_API = `https://api.github.com/users/${process.env.GITHUB_USERNAME}`;
 const CACHE_TTL = 600; // 10 minutes
 
+app.use('/', routes)
+/*
 app.get('/github', async (req, res) => {
     try {
         const cacheKey = `github:${process.env.GITHUB_USERNAME}`;
 
         // Check Redis Cache
         const cachedData = await redisClient.get(cacheKey);
-        console.log(cachedData)
-        
+        console.log(cachedData == null)
+
         if (cachedData == null) {
             // Fetch Data from GitHub API
             const [followersRes, followingRes, reposRes] = await Promise.all([
@@ -49,7 +52,8 @@ app.get('/github', async (req, res) => {
         res.status(500).json({ message: "Error fetching GitHub data" });
     }
 });
-
+*/
+app.use('/', )
 // Endpoint to get details of a specific repository
 app.get('/github/:repoName', async (req, res) => {
     try {
