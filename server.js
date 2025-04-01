@@ -59,7 +59,7 @@ app.get('/github', async (req, res) => {
     }
 });
 */
-app.use('/', routes)
+/*
 // Endpoint to get details of a specific repository
 app.get('/github/:repoName', async (req, res) => {
     try {
@@ -99,7 +99,8 @@ app.get('/github/:repoName', async (req, res) => {
         res.status(500).json({ message: "Error fetching repository details" });
     }
 });
-
+*/
+/*
 // Endpoint to create an issue in a GitHub repository
 app.post('/github/:repoName/issues', async (req, res) => {
     try {
@@ -130,5 +131,6 @@ app.post('/github/:repoName/issues', async (req, res) => {
         res.status(500).json({ message: "Error creating GitHub issue", error: error.response?.data });
     }
 });
+*/
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
