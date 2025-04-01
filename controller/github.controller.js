@@ -1,5 +1,5 @@
 import axios from 'axios';
-import redisClient from './redisClient';
+import redisClient from '../redisClient.js';
 
 const GITHUB_API = `https://api.github.com/users/${process.env.GITHUB_USERNAME}`;
 const CACHE_TTL = 600; // 10 minutes
@@ -44,4 +44,4 @@ const getGitHubProfile =  async (req, res) => {
     }
 };
 
-module.exports = {getGitHubProfile, }
+export {getGitHubProfile }

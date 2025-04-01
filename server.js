@@ -1,8 +1,14 @@
-require('dotenv').config();
+//require('dotenv').config();
+import dotenv from 'dotenv';
 import express from 'express';
 import axios from 'axios';
-import redisClient from 'redisClient';
+import redisClient from './redisClient.js';
 import routes from './routes/github.routes.js'
+
+
+dotenv.config(
+    {path: './.env'}
+)
 
 const app = express();
 app.use(express.json());
@@ -53,7 +59,7 @@ app.get('/github', async (req, res) => {
     }
 });
 */
-app.use('/', )
+app.use('/', routes)
 // Endpoint to get details of a specific repository
 app.get('/github/:repoName', async (req, res) => {
     try {
