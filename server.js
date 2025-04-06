@@ -1,8 +1,6 @@
 //require('dotenv').config();
 import dotenv from 'dotenv';
 import express from 'express';
-import axios from 'axios';
-import redisClient from './redisClient.js';
 import routes from './routes/github.routes.js'
 
 
@@ -14,10 +12,7 @@ const app = express();
 app.use(express.json());
 const PORT = process.env.PORT || 5000;
 
-const GITHUB_API = `https://api.github.com/users/${process.env.GITHUB_USERNAME}`;
-const CACHE_TTL = 600; // 10 minutes
-
-app.use('/', routes)
+app.use('/api/v1/', routes)
 /*
 app.get('/github', async (req, res) => {
     try {
@@ -132,5 +127,4 @@ app.post('/github/:repoName/issues', async (req, res) => {
     }
 });
 */
-
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
