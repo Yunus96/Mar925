@@ -34,8 +34,8 @@ const getGitHubProfile =  async (req, res) => {
 
             // Store Data in Redis (Expire in 10 Minutes)
             await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(githubData));
-
             res.set("X-Cache", "Miss").json(githubData);
+
         } else {
             return res.json(JSON.parse(cachedData)); // Return Cached Data
         }
@@ -113,6 +113,5 @@ const postIssue = async (req, res) =>{
         res.status(500).json({ message: "Error creating GitHub issue", error: error.response?.data });
     }
 }
-
 
 export {getGitHubProfile, getRepoDetails, postIssue }
