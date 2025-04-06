@@ -14,13 +14,13 @@ const getGitHubProfile =  async (req, res) => {
 
         if (cachedData == null) {
             // Fetch Data from GitHub API
-            console.log("hi")
             const [followersRes, followingRes, reposRes] = await Promise.all([
                 axios.get(`${GITHUB_API}/followers`),
                 axios.get(`${GITHUB_API}/following`),
                 axios.get(`${GITHUB_API}/repos?per_page=100`)
             ]);
 
+            console.log(followersRes)
             const githubData = {
                 username: process.env.GITHUB_USERNAME,
                 followers: followersRes.data.length,
@@ -39,10 +39,12 @@ const getGitHubProfile =  async (req, res) => {
         } else {
             return res.json(JSON.parse(cachedData)); // Return Cached Data
         }
+
     } catch (error) {
         console.error("GitHub API Error:", error.message);
         res.status(500).json({ message: "Error fetching GitHub data" });
     }
+
 };
 
 const getRepoDetails = async (req, res) => {
@@ -78,10 +80,12 @@ const getRepoDetails = async (req, res) => {
         } else {
              return res.json(JSON.parse(cachedData)); // Return Cached Data
         }
+
     } catch (error) {
         console.error("GitHub API Error:", error.message);
         res.status(500).json({ message: "Error fetching repository details" });
     }
+
 }
 
 const postIssue = async (req, res) =>{
@@ -108,6 +112,7 @@ const postIssue = async (req, res) =>{
             message: "Issue created successfully",
             issue_url: response.data.html_url
         });
+        
     } catch (error) {
         console.error("GitHub API Error:", error.response?.data || error.message);
         res.status(500).json({ message: "Error creating GitHub issue", error: error.response?.data });

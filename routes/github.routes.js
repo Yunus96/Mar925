@@ -2,7 +2,7 @@ import express from "express";
 import { getGitHubProfile, getRepoDetails, postIssue } from '../controller/github.controller.js';
 const router = express.Router();
 
-router.get("/user/me", getGitHubProfile);
+router.get("/users/me", getGitHubProfile);
 
 router.get("/repositories/:repoName", getRepoDetails);
 
