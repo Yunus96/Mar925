@@ -17,7 +17,7 @@ const getGitHubProfile =  async (req, res) => {
             const [followersRes, followingRes, reposRes] = await Promise.all([
                 axios.get(`${GITHUB_API}/followers`),
                 axios.get(`${GITHUB_API}/following`),
-                axios.get(`${GITHUB_API}/repos?per_page=100`)
+                axios.get(`${GITHUB_API}/repos?per_page=10`)
             ]);
 
             console.log(followersRes)
